@@ -1,11 +1,14 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: '@wise-emotions/release-action'
+description: 'Wisemotions github release action'
+author: 'Wise Emotions'
 inputs:
-  milliseconds: # change this
-    required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  jira-prefix:
+    required: false
+    description: 'The ID of the project'
+  tag-prefix:
+    required: false
+    description: 'The prefix of the release git tag'
+    default: 'goto-test-'
 runs:
   using: 'node12'
   main: 'dist/index.js'
