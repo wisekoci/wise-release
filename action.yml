@@ -4,10 +4,10 @@ author: 'Wise Emotions'
 inputs:
   jira-prefix:
     required: false
-    description: 'The ID of the project'
+    description: 'The ID of the Jira project (example: "BBC")'
   tag-prefix:
     required: false
-    description: 'The prefix of the release git tag'
+    description: 'The prefix of the release git tag (example: "goto-test-")'
     default: 'goto-test-'
 runs:
   using: 'node12'
