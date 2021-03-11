@@ -1,28 +1,52 @@
-import {wait} from '../src/wait'
-import * as process from 'process'
-import * as cp from 'child_process'
-import * as path from 'path'
+import JiraPlugin from '../src/plugins/jira'
 
-test('throws invalid number', async () => {
-  const input = parseInt('foo', 10)
-  await expect(wait(input)).rejects.toThrow('milliseconds not a number')
+test('empty markdown', async () => {
+  const markdown = ''
+
+  const jira = new JiraPlugin({
+    prefix: 'BBC',
+    baseUrl: 'https://telepass.atlassian.net/browse'
+  })
+
+  const result = jira.parse(markdown)
+
+  expect(result).toEqual('')
 })
 
-test('wait 500 ms', async () => {
-  const start = new Date()
-  await wait(500)
-  const end = new Date()
-  var delta = Math.abs(end.getTime() - start.getTime())
-  expect(delta).toBeGreaterThan(450)
+test('one ticket in markdown', async () => {
+  const markdown = '[BBC-12] add employee bulk upload'
+
+  const jira = new JiraPlugin({
+    prefix: 'BBC',
+    baseUrl: 'https://telepass.atlassian.net/browse'
+  })
+
+  const result = jira.parse(markdown)
+
+  expect(result).toEqual(
+    '[https://telepass.atlassian.net/browse/BBC-12](BBC-12) add employee bulk upload'
+  )
 })
 
-// shows how the runner will run a javascript action with env / stdout protocol
-test('test runs', () => {
-  process.env['INPUT_MILLISECONDS'] = '500'
-  const np = process.execPath
-  const ip = path.join(__dirname, '..', 'lib', 'main.js')
-  const options: cp.ExecFileSyncOptions = {
-    env: process.env
-  }
-  console.log(cp.execFileSync(np, [ip], options).toString())
+test('many ticket in markdown', async () => {
+  const markdown = `
+  - [BBC-1] add employee bulk upload
+  - [BBC-2] add employee single dialog
+  - [BBC-3] add employee validation errors
+  - [BBC-4] add employee delete
+  `
+
+  const jira = new JiraPlugin({
+    prefix: 'BBC',
+    baseUrl: 'https://telepass.atlassian.net/browse'
+  })
+
+  const result = jira.parse(markdown)
+
+  expect(result).toEqual(`
+  - [https://telepass.atlassian.net/browse/BBC-1](BBC-1) add employee bulk upload
+  - [https://telepass.atlassian.net/browse/BBC-2](BBC-2) add employee single dialog
+  - [https://telepass.atlassian.net/browse/BBC-3](BBC-3) add employee validation errors
+  - [https://telepass.atlassian.net/browse/BBC-4](BBC-4) add employee delete
+  `)
 })
