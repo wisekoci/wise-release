@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Check last execution time
         id: check-time
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           script: |
             const lastExecutionTime = context.payload.repository.updated_at;
