@@ -10,10 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check last execution time
+      - name: Set time
         id: check-time
-        run: |
-          echo "::set-output name=updated-at::$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+        run: echo "name=updated-at::$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_OUTPUT
         env:
           CACHE_NAME: CACHE_UPDATED_AT
 
@@ -43,4 +42,3 @@ jobs:
           restore-keys: ${{ runner.os }}-cache-
 
 
-            
