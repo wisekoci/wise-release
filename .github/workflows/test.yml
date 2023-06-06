@@ -16,9 +16,8 @@ jobs:
       - name: Get Last Commit Timestamp
         id: last-commit
         run: |
-          timestamp=$(git show -s --format=%aI origin/main)
-          echo "::set-output name=commit-timestamp::${timestamp}"
-      
+          timestamp=$(git log -1 --pretty=format:%aI)
+          echo "commit-timestamp=${timestamp}" >> $GITHUB_OUTPUT
       - name: Print Last Commit Timestamp
         run: |
           echo "Last Commit Timestamp: ${{ steps.last-commit.outputs.commit-timestamp }}"
