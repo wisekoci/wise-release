@@ -1,30 +1,26 @@
-name: Hello World
+name: Get Last Commit Timestamp
 
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
-  hello-world:
+  get-commit-timestamp:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get last commit timestamp
-        uses: actions/github-script@v6
-        id: commit-details
-        with:
-          script: |
-            const { repo, owner } = context.repo;
-            const { data: commit } = await github.rest.repos.getCommit({
-                owner,
-                repo,
-                ref: 'master'
-            });
-            core.setOutput("commit-timestamp", commit.commit.date);
-      - name: Read Cache Value
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Get Last Commit Timestamp
+        id: last-commit
         run: |
-          cacheValue=$(cat "${{ steps.restore-cache.outputs.timestamp }}")
-          echo "Cache Value: $cacheValue"
+          timestamp=$(git log -1 --format=%aI)
+          echo "name=commit-timestamp::${timestamp}" >> $GITHUB_OUTPUT
+      - name: Print Last Commit Timestamp
+        run: |
+          echo "Last Commit Timestamp: ${{ steps.last-commit.outputs.commit-timestamp }}"
 
           
+  
