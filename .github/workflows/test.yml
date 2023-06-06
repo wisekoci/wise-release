@@ -25,7 +25,7 @@ jobs:
 
       - name: Read Cache Value
         run: |
-          cacheValue=$(cat "${{ steps.restore-cache.outputs.CACHE_HIT }}")
+          cacheValue=$(cat "${{ steps.restore-cache.outputs.CACHE_UPDATED_AT }}")
           echo "Cache Value: $cacheValue"
 
       - name: Restore cache
