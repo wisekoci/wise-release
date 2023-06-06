@@ -16,7 +16,7 @@ jobs:
       - name: Get Last Commit Timestamp
         id: last-commit
         run: |
-          timestamp=$(git log -1 --format=%aI)
+          timestamp=$((git log -1 --format=%aI))
           echo "name=commit-timestamp::${timestamp}" >> $GITHUB_OUTPUT
       - name: Print Last Commit Timestamp
         run: |
