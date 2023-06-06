@@ -3,7 +3,7 @@ name: Get Last Commit Timestamp
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   get-commit-timestamp:
@@ -11,16 +11,14 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Get Last Commit Timestamp
         id: last-commit
         run: |
-          timestamp=$((git log -1 --format=%aI))
-          echo "name=commit-timestamp::${timestamp}" >> $GITHUB_OUTPUT
+          timestamp=$(git log -1 --pretty=format:%aI)
+          echo "::set-output name=commit-timestamp::${timestamp}"
+      
       - name: Print Last Commit Timestamp
         run: |
           echo "Last Commit Timestamp: ${{ steps.last-commit.outputs.commit-timestamp }}"
-
-          
-  
