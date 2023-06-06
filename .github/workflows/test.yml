@@ -30,7 +30,7 @@ jobs:
           
       - name: Update last execution time
         if: ${{ steps.check-time.outputs.hours-diff >= 1 }}
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           script: |
             const currentTime = new Date().toISOString();
