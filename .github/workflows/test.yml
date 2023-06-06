@@ -12,26 +12,32 @@ jobs:
     steps:
       - name: Check last execution time
         id: check-time
-        uses: actions/github-script@v6
+        run: |
+          echo "::set-output name=updated-at::$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+        env:
+          CACHE_NAME: CACHE_UPDATED_AT
+
+      - name: Restore cache
+        uses: actions/cache@v2
         with:
-          script: |
-            const lastExecutionTime = context.payload.repository.updated_at;
-            const currentTime = new Date().toISOString();
-
-            const timeDiff = Math.abs(new Date(currentTime) - new Date(lastExecutionTime));
-            const hoursDiff = Math.ceil(timeDiff / (1000 * 60 * 60));
-
-            core.setOutput('hours-diff', hoursDiff);
+          path: ${{ runner.workspace }}
+          key: ${{ runner.os }}-cache-${{ env.CACHE_NAME }}-${{ github.sha }}
 
       - name: Run Hello World
-        if: ${{ steps.check-time.outputs.hours-diff >= 1 }}
+        if: ${{ steps.check-time.outputs.updated-at == '' || steps.check-time.outputs.updated-at <= steps.restore-cache.outputs.CACHE_HIT }}
         run: |
           echo "Hello World"
-          
-      - name: Update last execution time
-        if: ${{ steps.check-time.outputs.hours-diff >= 1 }}
-        uses: actions/github-script@v6
+
+      - name: Save cache
+        uses: actions/cache@v2
         with:
-          script: |
-            const currentTime = new Date().toISOString();
-            github.rest.repos.update({ owner: context.repo.owner, repo: context.repo.repo, updated_at: currentTime });
+          path: ${{ runner.workspace }}
+          key: ${{ runner.os }}-cache-${{ env.CACHE_NAME }}-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-cache-${{ env.CACHE_NAME }}-
+
+      - name: Cleanup cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ runner.workspace }}
+          key: ${{ runner.os }}-cache-${{ env.CACHE_NAME }}
+          restore-keys: ${{ runner.os }}-cache-
