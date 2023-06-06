@@ -3,7 +3,7 @@ name: Get Last Commit Timestamp
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   get-commit-timestamp:
