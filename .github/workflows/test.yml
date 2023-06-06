@@ -1,24 +1,37 @@
-name: 'build-test'
-on: # rebuild any PRs and main branch changes
-  pull_request:
+name: Hello World
+
+on:
   push:
     branches:
-      - main
-      - 'releases/*'
+      - master
 
 jobs:
-  build: # make sure build/ci work properly
+  hello-world:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - run: |
-          npm install
-      - run: |
-          npm run all
-  test: # make sure the action works on a clean machine without building
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./
+      - name: Check last execution time
+        id: check-time
+        uses: actions/github-script@v5
         with:
-          milliseconds: 1000
+          script: |
+            const lastExecutionTime = context.payload.repository.updated_at;
+            const currentTime = new Date().toISOString();
+
+            const timeDiff = Math.abs(new Date(currentTime) - new Date(lastExecutionTime));
+            const hoursDiff = Math.ceil(timeDiff / (1000 * 60 * 60));
+
+            core.setOutput('hours-diff', hoursDiff);
+
+      - name: Run Hello World
+        if: ${{ steps.check-time.outputs.hours-diff >= 1 }}
+        run: |
+          echo "Hello World"
+          
+      - name: Update last execution time
+        if: ${{ steps.check-time.outputs.hours-diff >= 1 }}
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const currentTime = new Date().toISOString();
+            github.rest.repos.update({ owner: context.repo.owner, repo: context.repo.repo, updated_at: currentTime });
